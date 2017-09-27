@@ -16,7 +16,7 @@ defineModule(sim, list(
   reqdPkgs = list(),
   parameters = rbind(
     #defineParameter("paramName", "paramClass", default, min, max, "parameter description"),
-    defineParameter(name = "formula", class = "formula", default = ~1,
+    defineParameter(name = "formula", class = "formula", default = NA,
                     desc = "a formula describing the model to be fitted."),
     defineParameter(name = "data", class = "character", default = "dataFireSense_EscapeFit",
                     desc = "a character vector indicating the names of objects 
@@ -84,7 +84,10 @@ doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE)
 ### template initialization
 fireSense_EscapeFitInit <- function(sim) {
   
-  sim <- scheduleEvent(sim, eventTime = P(sim)$initialRunTime, current(sim)$moduleName, "run")
+  moduleName <- current(sim)$moduleName
+  
+  if (!is(P(sim)$formula, "formula")) stop(paste0(moduleName, "> The supplied object for the 'formula' parameter is not of class formula."))
+  sim <- scheduleEvent(sim, eventTime = P(sim)$initialRunTime, moduleName, "run")
   invisible(sim)
   
 }
@@ -92,6 +95,8 @@ fireSense_EscapeFitInit <- function(sim) {
 fireSense_EscapeFitRun <- function(sim) {
   
   moduleName <- current(sim)$moduleName
+  currentTime <- time(sim, timeunit(sim))
+  endTime <- end(sim, timeunit(sim))
   
   # Create a container to hold the data	
   envData <- new.env(parent = envir(sim))
@@ -126,6 +131,9 @@ fireSense_EscapeFitRun <- function(sim) {
   class(model) <- c("fireSense_EscapeFit", class(model))
   
   sim$fireSense_EscapeFitted <- model
+  
+  if (!is.na(P(sim)$intervalRunModule) && (currentTime + P(sim)$intervalRunModule) <= endTime) # Assumes time only moves forward
+    sim <- scheduleEvent(sim, currentTime + P(sim)$intervalRunModule, moduleName, "run")
   
   invisible(sim)
   
