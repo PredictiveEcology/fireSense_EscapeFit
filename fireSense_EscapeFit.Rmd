@@ -1,0 +1,97 @@
+---
+title: "fireSense_EscapeFit"
+author: ""
+date: "September 2017"
+output: pdf_document
+---
+
+# Overview
+
+Fit statistical models that can be used to parameterize the fire escape component of landscape fire models (e.g. fireSense).
+
+# Download the module
+```{r download module, eval = FALSE, echo = TRUE}
+library(SpaDES)
+
+moduleName <- "fireSense_EscapeFit"
+
+spadesModulesDirectory <- tempdir() # Location where the module will be downloaded
+
+downloadModule(moduleName, path = spadesModulesDirectory)
+```
+
+# Usage
+## Module parameters
+Name|Default|Description
+----|:--------------|---------------------------------------------------------------------
+`formula`|`~1`|a formula describing the model to be fitted.
+`data`|`"dataFireSense_EscapeFit"`|a character vector indicating the names of objects in the `simList` environment in which to look for variables present in the model formula. `data` objects should be data.frames. If variables are not found in `data` objects, they are searched in the `simList` environment.
+`initialRunTime`|`start(simList)`|when to start this module? By default, the start time of the simulation.
+`intervalRunModule`|`NA`|optional. Interval between two runs of this module, expressed in units of simulation time.
+|||
+
+
+
+## Usage example
+```{r module usage example, eval = FALSE}
+library(SpaDES)
+
+# Define simulation parameters
+times <- list(start = 1, end = 1, timeunit = "year")
+modules <- list("fireSense_EscapeFit")
+paths <- list(
+  modulePath = spadesModulesDirectory
+)
+
+# Example of model formula with piecewise terms
+model <- escaped ~ MonthlyDroughtCode_July + PcHardwood + PcConifer + PcDisturbed + PcOther + PcWater
+
+# Define module parameters
+parameters <- list(
+  fireSense_EscapeFit = list(
+    formula = formula,
+    data = "dataFireSense_EscapeFit"
+  )
+)
+
+# Define from where and how data will be loaded in the simList environment
+inputs <- data.frame(
+  objectName = "dataFireSense_EscapeFit",
+  file = "/path/to/data/input/",
+  fun = "readRDS",
+  package = "base",
+  loadTime = 1
+)
+
+# Create the simList
+sim <- simInit(
+  times = times,
+  modules = modules,
+  params = parameters,
+  paths = paths,
+  inputs = inputs
+)
+
+sim <- spades(sim)
+sim$fireSense_EscapeFitted
+```
+
+# Events
+Events are scheduled as follows:
+
+- Module initiation
+- Model fitting
+
+## Saving
+TODO: Write what is saved. (there is currently nothing saved, but this may change in the future)
+
+# Data dependencies
+## Input data
+- **dataFireSense_EscapeFit**: one or more data.frames in which to look for variables present in the model formula.
+
+## Output data
+- **fireSense_EscapeFitted**: an object of class `fireSense_EscapeFit`, inherited from the class `glm`.
+
+# Links to other modules
+This model can be used to parameterize the fire escape component of landscape fire models such as fireSense.
+
