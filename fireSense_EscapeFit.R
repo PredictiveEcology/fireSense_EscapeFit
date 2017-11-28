@@ -49,8 +49,8 @@ defineModule(sim, list(
 ## event types
 #   - type `init` is required for initialiazation
 
-doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE) {
-
+doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE) 
+{
   switch(
     eventType,
     init = { sim <- fireSense_EscapeFitInit(sim) },
@@ -82,18 +82,17 @@ doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE)
 #   - keep event functions short and clean, modularize by calling subroutines from section below.
 
 ### template initialization
-fireSense_EscapeFitInit <- function(sim) {
-  
+fireSense_EscapeFitInit <- function(sim) 
+{
   moduleName <- current(sim)$moduleName
   
   if (!is(P(sim)$formula, "formula")) stop(paste0(moduleName, "> The supplied object for the 'formula' parameter is not of class formula."))
   sim <- scheduleEvent(sim, eventTime = P(sim)$initialRunTime, moduleName, "run")
   invisible(sim)
-  
 }
 
-fireSense_EscapeFitRun <- function(sim) {
-  
+fireSense_EscapeFitRun <- function(sim) 
+{
   moduleName <- current(sim)$moduleName
   currentTime <- time(sim, timeunit(sim))
   endTime <- end(sim, timeunit(sim))
@@ -105,18 +104,16 @@ fireSense_EscapeFitRun <- function(sim) {
   # Load inputs in the data container
   list2env(as.list(envir(sim)), envir = envData)
   
-  for (x in P(sim)$data) {
-    
-    if (!is.null(sim[[x]])) {
-      
-      if (is.data.frame(sim[[x]])) {
-        
+  for (x in P(sim)$data)
+  {
+    if (!is.null(sim[[x]])) 
+    {
+      if (is.data.frame(sim[[x]])) 
+      {
         list2env(sim[[x]], envir = envData)
-        
-      } else stop(paste0(moduleName, "> '", x, "' is not a data.frame."))
-      
+      }
+      else stop(paste0(moduleName, "> '", x, "' is not a data.frame."))
     }
-    
   }
   
   if (is.empty.model(P(sim)$formula))
@@ -136,5 +133,4 @@ fireSense_EscapeFitRun <- function(sim) {
     sim <- scheduleEvent(sim, currentTime + P(sim)$intervalRunModule, moduleName, "run")
   
   invisible(sim)
-  
 }
