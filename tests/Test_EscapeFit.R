@@ -11,7 +11,7 @@ paths <- list(
 
 
 # Examples of model formula
-formula <- escape ~ MDC_78 + cn + dt + wt + ot
+formula <- cbind(escaped, nFires) ~ MDC_78 + cn + dt + wt + ot
 
 # Define module parameters
 parameters <- list(
