@@ -86,7 +86,8 @@ fireSense_EscapeFitInit <- function(sim)
 {
   moduleName <- current(sim)$moduleName
   
-  if (!is(P(sim)$formula, "formula")) stop(paste0(moduleName, "> The supplied object for the 'formula' parameter is not of class formula."))
+  if (!is(P(sim)$formula, "formula")) 
+    stop(paste0(moduleName, "> The supplied object for the 'formula' parameter is not of class formula."))
   sim <- scheduleEvent(sim, eventTime = P(sim)$initialRunTime, moduleName, "run")
   invisible(sim)
 }
@@ -123,7 +124,7 @@ fireSense_EscapeFitRun <- function(sim)
   
   if (!attr(terms, "response"))
     stop(paste0(moduleName, "> Incomplete formula, the LHS is missing."))
-  
+
   model <- glm(formula = P(sim)$formula, data = envData, family = "binomial")
   class(model) <- c("fireSense_EscapeFit", class(model))
   
