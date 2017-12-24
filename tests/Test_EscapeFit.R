@@ -1,6 +1,6 @@
 library(SpaDES)
 
-modulePath <- "~/Documents/GitHub/McIntire-lab/modulesPrivate/"
+modulePath <- normalizePath("..")
 
 # Define simulation parameters
 times <- list(start = 1, end = 1, timeunit = "year")
@@ -24,7 +24,7 @@ parameters <- list(
 # Define from where and how data will be loaded in the simList environment
 inputs <- data.frame(
   objectName = "dataFireSense_EscapeFit",
-  file = "C:/Z/Contrats/Pessiere/DataInputs/dataFireSense_EscapeFit_foudre.rds",
+  file = normalizePath("../inputs/dataFireSense_EscapeFit.rds"),
   fun = "readRDS",
   package = "base",
   loadTime = 1
