@@ -109,18 +109,28 @@ fireSense_EscapeFitRun <- function(sim)
       {
         list2env(sim[[x]], envir = envData)
       }
-      else stop(paste0(moduleName, "> '", x, "' is not a data.frame."))
+      else stop(moduleName, "> '", x, "' is not a data.frame.")
     }
   }
   
   if (is.empty.model(P(sim)$formula))
-    stop(paste0(moduleName, "> The formula describes an empty model."))
+    stop(moduleName, "> The formula describes an empty model.")
   
   terms <- terms.formula(P(sim)$formula)
   
   if (!attr(terms, "response"))
-    stop(paste0(moduleName, "> Incomplete formula, the LHS is missing."))
+    stop(moduleName, "> Incomplete formula, the LHS is missing.")
 
+  allxy <- all.vars(P(sim)$formula)
+  missing <- !allxy %in% ls(envData, all.names = TRUE)
+  
+  if (s <- sum(missing))
+    stop(
+      moduleName, "> '", allxy[missing][1L], "'",
+      if (s > 1) paste0(" (and ", s-1L, " other", if (s>2) "s", ")"),
+      " not found in data objects nor in the simList environment."
+    )
+  
   model <- glm(formula = P(sim)$formula, data = envData, family = "binomial")
   class(model) <- c("fireSense_EscapeFit", class(model))
   
