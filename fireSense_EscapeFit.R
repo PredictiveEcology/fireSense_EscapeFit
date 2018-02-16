@@ -78,7 +78,7 @@ fireSense_EscapeFitInit <- function(sim)
   moduleName <- current(sim)$moduleName
   
   if (!is(P(sim)$formula, "formula")) 
-    stop(paste0(moduleName, "> The supplied object for the 'formula' parameter is not of class formula."))
+    stop(moduleName, "> The supplied object for the 'formula' parameter is not of class formula.")
   
   sim <- scheduleEvent(sim, eventTime = P(sim)$.runInitialTime, moduleName, "run")
   
