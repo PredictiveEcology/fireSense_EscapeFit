@@ -44,7 +44,7 @@ defineModule(sim, list(
     sourceURL = NA_character_
   ),
   outputObjects = createsOutput(
-    objectName = "escapeFitted",
+    objectName = "fireSense_EscapeFitted",
     objectClass = "fireSense_EscapeFit",
     desc = "A fitted model object of class fireSense_EscapeFit (inheriting from the class glm)."
   )
@@ -130,7 +130,7 @@ escapeFitRun <- function(sim)
   model <- glm(formula = P(sim)$formula, data = mod, family = "binomial")
   class(model) <- c("fireSense_EscapeFit", class(model))
   
-  sim$escapeFitted <- model
+  sim$fireSense_EscapeFitted <- model
   
   if (!is.na(P(sim)$.runInterval))
     sim <- scheduleEvent(sim, currentTime + P(sim)$.runInterval, moduleName, "run")
@@ -146,7 +146,7 @@ escapeFitSave <- function(sim)
   currentTime <- time(sim, timeUnit)
   
   saveRDS(
-    sim$escapeFitted, 
+    sim$fireSense_EscapeFitted, 
     file = file.path(paths(sim)$out, paste0("fireSense_EscapeFitted_", timeUnit, currentTime, ".rds"))
   )
   
