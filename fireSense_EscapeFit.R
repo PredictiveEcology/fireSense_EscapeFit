@@ -94,12 +94,8 @@ escapeFitRun <- function(sim)
   currentTime <- time(sim, timeunit(sim))
   endTime <- end(sim, timeunit(sim))
   
-  # Create a container to hold the data	
-  envData <- new.env(parent = envir(sim))
-  on.exit(rm(envData))
-  
   # Load inputs in the data container
-  list2env(as.list(envir(sim)), envir = envData)
+  list2env(as.list(envir(sim)), envir = mod)
   
   for (x in P(sim)$data)
   {
@@ -107,7 +103,7 @@ escapeFitRun <- function(sim)
     {
       if (is.data.frame(sim[[x]])) 
       {
-        list2env(sim[[x]], envir = envData)
+        list2env(sim[[x]], envir = mod)
       }
       else stop(moduleName, "> '", x, "' is not a data.frame.")
     }
@@ -122,7 +118,7 @@ escapeFitRun <- function(sim)
     stop(moduleName, "> Incomplete formula, the LHS is missing.")
 
   allxy <- all.vars(P(sim)$formula)
-  missing <- !allxy %in% ls(envData, all.names = TRUE)
+  missing <- !allxy %in% ls(mod, all.names = TRUE)
   
   if (s <- sum(missing))
     stop(
@@ -131,7 +127,7 @@ escapeFitRun <- function(sim)
       " not found in data objects nor in the simList environment."
     )
   
-  model <- glm(formula = P(sim)$formula, data = envData, family = "binomial")
+  model <- glm(formula = P(sim)$formula, data = mod, family = "binomial")
   class(model) <- c("fireSense_EscapeFit", class(model))
   
   sim$escapeFitted <- model
