@@ -82,7 +82,7 @@ sim$fireSense_EscapeFitted
 # Events
 Events are scheduled as follows:
 
-- Module initiation
+- Module initialisation
 - Model fitting
 
 # Data dependencies
