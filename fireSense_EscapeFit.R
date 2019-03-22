@@ -53,11 +53,30 @@ defineModule(sim, list(
 
 doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE) 
 {
+  moduleName <- current(sim)$moduleName
+  
   switch(
     eventType,
-    init = { sim <- escapeFitInit(sim) },
-    run = { sim <- escapeFitRun(sim) },
-    save = { sim <- escapeFitSave(sim) },
+    init = {
+      sim <- escapeFitInit(sim)
+      
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.runInitialTime, moduleName, "run")
+      
+      if (!is.na(P(sim)$.saveInitialTime))
+        sim <- scheduleEvent(sim, P(sim)$.saveInitialTime, moduleName, "save", .last())
+    },
+    run = { 
+      sim <- escapeFitRun(sim)
+      
+      if (!is.na(P(sim)$.runInterval))
+        sim <- scheduleEvent(sim, time(sim) + P(sim)$.runInterval, moduleName, "run")
+    },
+    save = { 
+      sim <- escapeFitSave(sim)
+      
+      if (!is.na(P(sim)$.saveInterval))
+        sim <- scheduleEvent(sim, time(sim) + P(sim)$.saveInterval, moduleName, "save", .last())
+    },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
   )
@@ -77,12 +96,7 @@ escapeFitInit <- function(sim)
   
   if (!is(P(sim)$formula, "formula")) 
     stop(moduleName, "> The supplied object for the 'formula' parameter is not of class formula.")
-  
-  sim <- scheduleEvent(sim, eventTime = P(sim)$.runInitialTime, moduleName, "run")
-  
-  if (!is.na(P(sim)$.saveInitialTime))
-    sim <- scheduleEvent(sim, P(sim)$.saveInitialTime, moduleName, "save", .last())
-  
+
   invisible(sim)
 }
 
@@ -90,7 +104,6 @@ escapeFitRun <- function(sim)
 {
   moduleName <- current(sim)$moduleName
   currentTime <- time(sim, timeunit(sim))
-  endTime <- end(sim, timeunit(sim))
   
   # Load inputs in the data container
   # list2env(as.list(envir(sim)), envir = mod)
@@ -130,9 +143,6 @@ escapeFitRun <- function(sim)
   
   sim$fireSense_EscapeFitted <- model
   
-  if (!is.na(P(sim)$.runInterval))
-    sim <- scheduleEvent(sim, currentTime + P(sim)$.runInterval, moduleName, "run")
-  
   invisible(sim)
 }
 
@@ -147,9 +157,6 @@ escapeFitSave <- function(sim)
     sim$fireSense_EscapeFitted, 
     file = file.path(paths(sim)$out, paste0("fireSense_EscapeFitted_", timeUnit, currentTime, ".rds"))
   )
-  
-  if (!is.na(P(sim)$.saveInterval))
-    sim <- scheduleEvent(sim, currentTime + P(sim)$.saveInterval, moduleName, "save", .last())
   
   invisible(sim)
 }
