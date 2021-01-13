@@ -2,8 +2,8 @@
 # are put into the simList. To use objects and functions, use sim$xxx.
 defineModule(sim, list(
   name = "fireSense_EscapeFit",
-  description = "Fit statistical models that can be used to parameterize (calibrate) 
-                 the fire escape component of landscape fire models (e.g. fireSense).",
+  description = paste("Fit statistical models that can be used to parameterize (calibrate)",
+                      "the fire escape component of landscape fire models (e.g. fireSense)."),
   keywords = c("escape probability", "fire frequency", "logistic", "fireSense"),
   authors = person("Jean", "Marchal", email = "jean.d.marchal@gmail.com", role = c("aut", "cre")),
   childModules = character(0),
@@ -15,25 +15,25 @@ defineModule(sim, list(
   documentation = list("README.txt", "fireSense_EscapeFit.Rmd"),
   reqdPkgs = list(),
   parameters = rbind(
-    #defineParameter("paramName", "paramClass", default, min, max, "parameter description"),
-    defineParameter(name = "formula", class = "formula", default = NA,
+    defineParameter("data", "character", default = "dataFireSense_EscapeFit",
+                    desc = paste("a character vector indicating the names of objects in the",
+                                 "`simList` environment in which to look for variables present in the model formula.",
+                                 "`data` objects should be data.frames.")),
+    defineParameter("formula", "formula", default = NA,
                     desc = "a formula describing the model to be fitted."),
-    defineParameter(name = "data", class = "character", default = "dataFireSense_EscapeFit",
-                    desc = "a character vector indicating the names of objects 
-                            in the `simList` environment in which to look for 
-                            variables present in the model formula. `data` 
-                            objects should be data.frames."),
-    defineParameter(name = ".runInitialTime", class = "numeric", default = start(sim),
-                    desc = "when to start this module? By default, the start 
-                    time of the simulation."),
-    defineParameter(name = ".runInterval", class = "numeric", default = NA, 
-                    desc = "optional. Interval between two runs of this module,
-                    expressed in units of simulation time. By default, NA, which means that this module only runs once per simulation."),
-    defineParameter(name = ".saveInitialTime", class = "numeric", default = NA, 
+    defineParameter(".runInitialTime", "numeric", default = start(sim),
+                    desc = "when to start this module? By default, the start time of the simulation."),
+    defineParameter(".runInterval", "numeric", default = NA,
+                    desc = paste("optional. Interval between two runs of this module,",
+                                 "expressed in units of simulation time.",
+                                 "By default, NA, which means that this module only runs once per simulation.")),
+    defineParameter(".saveInitialTime", "numeric", default = NA,
                     desc = "optional. When to start saving output to a file."),
-    defineParameter(name = ".saveInterval", class = "numeric", default = NA, 
+    defineParameter(".saveInterval", "numeric", default = NA,
                     desc = "optional. Interval between save events."),
-    defineParameter(".useCache", "logical", FALSE, NA, NA, "Should this entire module be run with caching activated? This is generally intended for data-type modules, where stochasticity and time are not relevant")
+    defineParameter(".useCache", "logical", FALSE, NA, NA,
+                    paste("Should this entire module be run with caching activated?",
+                          "This is generally intended for data-type modules, where stochasticity and time are not relevant."))
   ),
   inputObjects = expectsInput(
     objectName = "dataFireSense_EscapeFit",
@@ -48,117 +48,101 @@ defineModule(sim, list(
   )
 ))
 
-## event types
-#   - type `init` is required for initialiazation
-
-doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE) 
-{
+doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE) {
   moduleName <- current(sim)$moduleName
-  
+
   switch(
     eventType,
     init = {
       sim <- escapeFitInit(sim)
-      
+
       sim <- scheduleEvent(sim, eventTime = P(sim)$.runInitialTime, moduleName, "run")
-      
+
       if (!is.na(P(sim)$.saveInitialTime))
         sim <- scheduleEvent(sim, P(sim)$.saveInitialTime, moduleName, "save", .last())
     },
-    run = { 
+    run = {
       sim <- escapeFitRun(sim)
-      
+
       if (!is.na(P(sim)$.runInterval))
         sim <- scheduleEvent(sim, time(sim) + P(sim)$.runInterval, moduleName, "run")
     },
-    save = { 
+    save = {
       sim <- escapeFitSave(sim)
-      
+
       if (!is.na(P(sim)$.saveInterval))
         sim <- scheduleEvent(sim, time(sim) + P(sim)$.saveInterval, moduleName, "save", .last())
     },
     warning(paste("Undefined event type: '", current(sim)[1, "eventType", with = FALSE],
                   "' in module '", current(sim)[1, "moduleName", with = FALSE], "'", sep = ""))
   )
-  
+
   invisible(sim)
 }
 
-## event functions
-#   - follow the naming convention `modulenameEventtype()`;
-#   - `modulenameInit()` function is required for initiliazation;
-#   - keep event functions short and clean, modularize by calling subroutines from section below.
-
-### template initialization
-escapeFitInit <- function(sim) 
-{
+escapeFitInit <- function(sim) {
   moduleName <- current(sim)$moduleName
-  
-  if (!is(P(sim)$formula, "formula")) 
+
+  if (!is(P(sim)$formula, "formula"))
     stop(moduleName, "> The supplied object for the 'formula' parameter is not of class formula.")
 
   invisible(sim)
 }
 
-escapeFitRun <- function(sim) 
-{
+escapeFitRun <- function(sim) {
   moduleName <- current(sim)$moduleName
   currentTime <- time(sim, timeunit(sim))
-  
+
   # Load inputs in the data container
   # list2env(as.list(envir(sim)), envir = mod)
-  
+
   mod_env <- new.env()
-  
-  for (x in P(sim)$data)
-  {
-    if (!is.null(sim[[x]])) 
-    {
-      if (is.data.frame(sim[[x]])) 
-      {
+
+  for (x in P(sim)$data) {
+    if (!is.null(sim[[x]])) {
+      if (is.data.frame(sim[[x]])) {
         list2env(sim[[x]], envir = mod_env)
+      } else {
+        stop(moduleName, "> '", x, "' is not a data.frame.")
       }
-      else stop(moduleName, "> '", x, "' is not a data.frame.")
     }
   }
-  
+
   if (is.empty.model(P(sim)$formula))
     stop(moduleName, "> The formula describes an empty model.")
-  
+
   terms <- terms.formula(P(sim)$formula)
-  
+
   if (!attr(terms, "response"))
     stop(moduleName, "> Incomplete formula, the LHS is missing.")
 
   allxy <- all.vars(P(sim)$formula)
   missing <- !allxy %in% ls(mod_env, all.names = TRUE)
-  
+
   if (s <- sum(missing))
     stop(
       moduleName, "> '", allxy[missing][1L], "'",
-      if (s > 1) paste0(" (and ", s-1L, " other", if (s>2) "s", ")"),
+      if (s > 1) paste0(" (and ", s - 1L, " other", if (s > 2) "s", ")"),
       " not found in data objects nor in the simList environment."
     )
-  
+
   model <- glm(formula = P(sim)$formula, data = mod_env, family = "binomial")
   class(model) <- c("fireSense_EscapeFit", class(model))
-  
+
   sim$fireSense_EscapeFitted <- model
-  
+
   invisible(sim)
 }
 
-
-escapeFitSave <- function(sim)
-{
+escapeFitSave <- function(sim) {
   moduleName <- current(sim)$moduleName
   timeUnit <- timeunit(sim)
   currentTime <- time(sim, timeUnit)
-  
+
   saveRDS(
-    sim$fireSense_EscapeFitted, 
+    sim$fireSense_EscapeFitted,
     file = file.path(paths(sim)$out, paste0("fireSense_EscapeFitted_", timeUnit, currentTime, ".rds"))
   )
-  
+
   invisible(sim)
 }
