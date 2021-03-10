@@ -15,12 +15,8 @@ defineModule(sim, list(
   documentation = list("README.txt", "fireSense_EscapeFit.Rmd"),
   reqdPkgs = list(),
   parameters = rbind(
-    defineParameter("data", "character", default = "dataFireSense_EscapeFit",
-                    desc = paste("a character vector indicating the names of objects in the",
-                                 "`simList` environment in which to look for variables present in the model formula.",
-                                 "`data` objects should be data.frames.")),
-    defineParameter("formula", "formula", default = NA,
-                    desc = "a formula describing the model to be fitted."),
+    defineParameter("fireSense_escapeFormula", "character", default = NA, NA, NA,
+                    desc = "a formula describing the model to be fitted, as character."),
     defineParameter(".runInitialTime", "numeric", default = start(sim),
                     desc = "when to start this module? By default, the start time of the simulation."),
     defineParameter(".runInterval", "numeric", default = NA,
@@ -36,7 +32,7 @@ defineModule(sim, list(
                           "This is generally intended for data-type modules, where stochasticity and time are not relevant."))
   ),
   inputObjects = expectsInput(
-    objectName = "dataFireSense_EscapeFit",
+    objectName = "fireSense_escapeCovariates",
     objectClass = "data.frame",
     desc = "One or more objects of class data.frame in which to look for variables present in the model formula.",
     sourceURL = NA_character_
@@ -81,10 +77,6 @@ doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE)
 }
 
 escapeFitInit <- function(sim) {
-  moduleName <- current(sim)$moduleName
-
-  if (!is(P(sim)$formula, "formula"))
-    stop(moduleName, "> The supplied object for the 'formula' parameter is not of class formula.")
 
   invisible(sim)
 }
@@ -93,40 +85,29 @@ escapeFitRun <- function(sim) {
   moduleName <- current(sim)$moduleName
   currentTime <- time(sim, timeunit(sim))
 
-  # Load inputs in the data container
-  # list2env(as.list(envir(sim)), envir = mod)
+  fireSense_escapeFormula <- as.formula(P(sim)$fireSense_escapeFormula)
 
-  mod_env <- new.env()
 
-  for (x in P(sim)$data) {
-    if (!is.null(sim[[x]])) {
-      if (is.data.frame(sim[[x]])) {
-        list2env(sim[[x]], envir = mod_env)
-      } else {
-        stop(moduleName, "> '", x, "' is not a data.frame.")
-      }
-    }
-  }
-
-  if (is.empty.model(P(sim)$formula))
+  if (is.empty.model(fireSense_escapeFormula))
     stop(moduleName, "> The formula describes an empty model.")
 
-  terms <- terms.formula(P(sim)$formula)
+  terms <- terms.formula(fireSense_escapeFormula)
 
-  if (!attr(terms, "response"))
+  if (!attr(terms, "response")) {
     stop(moduleName, "> Incomplete formula, the LHS is missing.")
+  }
 
-  allxy <- all.vars(P(sim)$formula)
-  missing <- !allxy %in% ls(mod_env, all.names = TRUE)
+  allxy <- all.vars(fireSense_escapeFormula)
+  missing <- !allxy %in% ls(sim$fireSense_escapeCovariates, all.names = TRUE)
 
   if (s <- sum(missing))
     stop(
       moduleName, "> '", allxy[missing][1L], "'",
       if (s > 1) paste0(" (and ", s - 1L, " other", if (s > 2) "s", ")"),
-      " not found in data objects nor in the simList environment."
+      " not found in sim$fireSense_escapeCovariates."
     )
 
-  model <- glm(formula = P(sim)$formula, data = mod_env, family = "binomial")
+  model <- glm(formula = fireSense_escapeFormula, data = sim$fireSense_escapeCovariates, family = "binomial")
   class(model) <- c("fireSense_EscapeFit", class(model))
 
   sim$fireSense_EscapeFitted <- model
