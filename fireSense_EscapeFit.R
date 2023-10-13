@@ -50,14 +50,19 @@ doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE)
   switch(
     eventType,
     init = {
-      sim <- escapeFitInit(sim)
+
+      sim <- scheduleEvent(sim, eventTime = P(sim)$.runInitialTime, moduleName, "checkData")
 
       sim <- scheduleEvent(sim, eventTime = P(sim)$.runInitialTime, moduleName, "run")
 
       if (!is.na(P(sim)$.saveInitialTime))
         sim <- scheduleEvent(sim, P(sim)$.saveInitialTime, moduleName, "save", .last())
     },
+    checkData = {
+      sim <- escapeFitInit(sim)
+    },
     run = {
+      
       sim <- escapeFitRun(sim)
 
       if (!is.na(P(sim)$.runInterval))
