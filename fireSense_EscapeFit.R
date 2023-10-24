@@ -15,8 +15,6 @@ defineModule(sim, list(
   documentation = list("README.txt", "fireSense_EscapeFit.Rmd"),
   reqdPkgs = list(),
   parameters = rbind(
-    defineParameter("fireSense_escapeFormula", "character", default = NA, NA, NA,
-                    desc = "a formula describing the model to be fitted, as character."),
     defineParameter(".runInitialTime", "numeric", default = start(sim),
                     desc = "when to start this module? By default, the start time of the simulation."),
     defineParameter(".runInterval", "numeric", default = NA,
@@ -31,16 +29,17 @@ defineModule(sim, list(
                     paste("Should this entire module be run with caching activated?",
                           "This is generally intended for data-type modules, where stochasticity and time are not relevant."))
   ),
-  inputObjects = expectsInput(
-    objectName = "fireSense_escapeCovariates",
-    objectClass = "data.frame",
-    desc = "One or more objects of class data.frame in which to look for variables present in the model formula.",
-    sourceURL = NA_character_
+  inputObjects = bindrows(
+    expectsInput(
+      objectName = "fireSense_escapeCovariates", objectClass = "data.frame",
+      desc = "table of aggregated covariates with annual ignitions and escapes"),
+    expectsInput("fireSense_escapeFormula", "character", 
+                 desc = "a formula describing the model to be fitted, as character.")
   ),
   outputObjects = createsOutput(
     objectName = "fireSense_EscapeFitted",
     objectClass = "fireSense_EscapeFit",
-    desc = "A fitted model object of class fireSense_EscapeFit (inheriting from the class glm)."
+    desc = "formula - as a character - describing the model to be fitted."
   )
 ))
 
@@ -90,7 +89,7 @@ escapeFitRun <- function(sim) {
   moduleName <- current(sim)$moduleName
   currentTime <- time(sim, timeunit(sim))
 
-  fireSense_escapeFormula <- as.formula(P(sim)$fireSense_escapeFormula)
+  fireSense_escapeFormula <- as.formula(sim$fireSense_escapeFormula)
 
 
   if (is.empty.model(fireSense_escapeFormula))
