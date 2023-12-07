@@ -33,7 +33,7 @@ defineModule(sim, list(
     expectsInput(
       objectName = "fireSense_escapeCovariates", objectClass = "data.frame",
       desc = "table of aggregated covariates with annual ignitions and escapes"),
-    expectsInput("fireSense_escapeFormula", "character", 
+    expectsInput("fireSense_escapeFormula", "character",
                  desc = "a formula describing the model to be fitted, as character.")
   ),
   outputObjects = createsOutput(
@@ -61,7 +61,7 @@ doEvent.fireSense_EscapeFit = function(sim, eventTime, eventType, debug = FALSE)
       sim <- escapeFitInit(sim)
     },
     run = {
-      
+
       sim <- escapeFitRun(sim)
 
       if (!is.na(P(sim)$.runInterval))
@@ -89,7 +89,7 @@ escapeFitRun <- function(sim) {
   moduleName <- current(sim)$moduleName
   currentTime <- time(sim, timeunit(sim))
 
-  fireSense_escapeFormula <- as.formula(sim$fireSense_escapeFormula)
+  fireSense_escapeFormula <- as.formula(sim$fireSense_escapeFormula, env = .GlobalEnv)
 
 
   if (is.empty.model(fireSense_escapeFormula))
