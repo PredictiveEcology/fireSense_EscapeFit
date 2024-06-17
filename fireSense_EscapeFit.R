@@ -30,9 +30,8 @@ defineModule(sim, list(
                           "This is generally intended for data-type modules, where stochasticity and time are not relevant."))
   ),
   inputObjects = bindrows(
-    expectsInput(
-      objectName = "fireSense_escapeCovariates", objectClass = "data.frame",
-      desc = "table of aggregated covariates with annual ignitions and escapes"),
+    expectsInput("fireSense_escapeCovariates", "data.frame",
+                 desc = "table of aggregated covariates with annual ignitions and escapes"),
     expectsInput("fireSense_escapeFormula", "character",
                  desc = "a formula describing the model to be fitted, as character.")
   ),
