@@ -5,7 +5,12 @@ defineModule(sim, list(
   description = paste("Fit statistical models that can be used to parameterize (calibrate)",
                       "the fire escape component of landscape fire models (e.g. fireSense)."),
   keywords = c("escape probability", "fire frequency", "logistic", "fireSense"),
-  authors = person("Jean", "Marchal", email = "jean.d.marchal@gmail.com", role = c("aut", "cre")),
+  authors = c(
+      person("Jean", "Marchal", email = "jean.d.marchal@gmail.com", role = c("aut", "cre")),
+      person("Ian", "Eddy", role = c("aut", "cre"), email = "ian.eddy@nrcan-rncan.gc.ca"),
+      person("Eliot", "McIntire", role = "aut", email = "eliot.mcintire@nrcan-rncan.gc.ca"),
+      person("Alex M", "Chubaty", role = "ctb", email = "achubaty@for-cast.ca")
+  ),
   childModules = character(0),
   version = list(SpaDES.core = "0.1.0", fireSense_EscapeFit = "0.0.1"),
   spatialExtent = raster::extent(rep(NA_real_, 4)),
