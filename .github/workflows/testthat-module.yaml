@@ -20,6 +20,6 @@ jobs:
     ## No permissions block: unlike render-module-rmd, this workflow writes nothing
     ## back to the repository, so the default `contents: read` it declares for
     ## itself is all it needs.
-    uses: PredictiveEcology/actions/.github/workflows/testthat-module.yaml@feat/testthat-module-workflow
+    uses: PredictiveEcology/actions/.github/workflows/testthat-module.yaml@main
     with:
       module: fireSense_EscapeFit
