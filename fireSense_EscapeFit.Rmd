@@ -1,99 +1,113 @@
 ---
-title: "fireSense_EscapeFit"
-author: "Jean Marchal (jean.d.marchal@gmail.com)"
-date: "`r format(Sys.time(), '%B %Y')`"
+title: "fireSense_EscapeFit Manual"
+subtitle: "v.`r SpaDES.core::moduleMetadata(module = 'fireSense_EscapeFit', path = '..')$version`"
+date: "Last updated: `r Sys.Date()`"
 output:
-  html_document: default
-  pdf_document: default
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    theme: sandstone
+    number_sections: false
+    df_print: paged
+    keep_md: yes
+editor_options:
+  chunk_output_type: console
+bibliography: citations/references_fireSense_EscapeFit.bib
+link-citations: true
+always_allow_html: true
 ---
 
-# Overview
-Fit statistical models that can be used to parameterize the fire escape component of landscape fire models (e.g. fireSense).
+# fireSense_EscapeFit Module
 
-# Download the module
-```{r download module, eval = FALSE, echo = TRUE}
-library(SpaDES)
+<!-- the following are text references used in captions for LaTeX compatibility -->
+(ref:fireSense-EscapeFit) *fireSense_EscapeFit*
 
-moduleName <- "fireSense_EscapeFit"
+```{r setup-fireSense-EscapeFit, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE, results = "hold") ## change to eval = TRUE if all chunks are to be evaluated
 
-spadesModulesDirectory <- tempdir() # Location where the module will be downloaded
+dir.create("figures", showWarnings = FALSE)
 
-downloadModule(moduleName, path = spadesModulesDirectory)
+download.file(url = "https://img.shields.io/badge/Made%20with-Markdown-1f425f.png",
+              destfile = "figures/markdownBadge.png",
+              mode = "wb")
 ```
 
-# Usage
-## Module parameters
-Name|Default|Description
-----|:--------------|---------------------------------------------------------------------
-`formula`|`NA`|a formula describing the model to be fitted.
-`data`|`"dataFireSense_EscapeFit"`|a character vector indicating the names of objects in the `simList` environment in which to look for variables present in the model formula. `data` objects should be data.frames.
-`.runInitialTime`|`start(simList)`|when to start this module? By default, the start time of the simulation.
-`.runInterval`|`NA`|optional. Interval between two runs of this module, expressed in units of simulation time. By default, NA, which means that this module only runs once per simulation.
-`.saveInitialTime`|`NA`|optional. When to start saving output to a file.
-`.saveInterval`|`NA`|optional. Interval between save events.
-|||
+[![made-with-Markdown](figures/markdownBadge.png)](https://commonmark.org)
 
+<!-- if knitting to pdf remember to add the pandoc_args: ["--extract-media", "."] option to yml in order to get the badge images -->
 
+#### Authors:
 
-## Usage example
-```{r module usage example, eval = FALSE}
-library(SpaDES)
+`r paste(as.character(SpaDES.core::moduleMetadata(module = "fireSense_EscapeFit", path = '..')$authors), sep = ', ')`
+<!-- ideally separate authors with new lines, '\n' not working -->
 
-spadesModulesDirectory <- ".."
+## Module Overview
 
-# Define simulation parameters
-times <- list(start = 1, end = 1, timeunit = "year")
-modules <- list("fireSense_EscapeFit")
-paths <- list(
-  modulePath = spadesModulesDirectory
-)
+<!-- TODO -->
+Fit statistical models that can be used to parameterize the fire escape component of landscape fire models (e.g. fireSense [@Marchal:2017a; @Marchal:2017b; @Marchal:2019]).
 
-# Example of model formula with piecewise terms
-model <- escaped ~ MonthlyDroughtCode_July + PcHardwood + PcConifer + PcDisturbed + PcOther + PcWater
+### Module summary
 
-# Define module parameters
-parameters <- list(
-  fireSense_EscapeFit = list(
-    formula = formula,
-    data = "dataFireSense_EscapeFit"
-  )
-)
+Provide a brief summary of what the module does / how to use the module.
 
-# Define from where and how data will be loaded in the simList environment
-inputs <- data.frame(
-  objectName = "dataFireSense_EscapeFit",
-  file = "/path/to/data/input/",
-  fun = "readRDS",
-  package = "base",
-  loadTime = 1
-)
+Module documentation should be written so that others can use your module.
+This is a template for module documentation, and should be changed to reflect your module.
 
-# Create the simList
-sim <- simInit(
-  times = times,
-  modules = modules,
-  params = parameters,
-  paths = paths,
-  inputs = inputs
-)
+### Module inputs and parameters
 
-sim <- spades(sim)
-sim$fireSense_EscapeFitted
+Table \@ref(tab:moduleInputs-fireSense-EscapeFit) shows the full list of module inputs.
+
+```{r moduleInputs-fireSense-EscapeFit, echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+df_inputs <- SpaDES.core::moduleInputs("fireSense_EscapeFit", "..")
+knitr::kable(df_inputs,
+             caption = "List of (ref:fireSense-EscapeFit) input objects and their description.") |>
+  kableExtra::kable_styling(latex_options = "scale_down", full_width = TRUE)
 ```
 
-# Events
-Events are scheduled as follows:
+Summary of user-visible parameters (Table \@ref(tab:moduleParams-fireSense-EscapeFit))
 
-- Module initialisation
-- Model fitting
 
-# Data dependencies
-## Input data
-- **dataFireSense_EscapeFit**: one or more data.frames in which to look for variables present in the model formula.
+```{r moduleParams-fireSense-EscapeFit, echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+df_params <- SpaDES.core::moduleParams("fireSense_EscapeFit", "..")
+knitr::kable(df_params, caption = "List of (ref:fireSense-EscapeFit) parameters and their description.") |>
+  kableExtra::kable_styling(latex_options = "scale_down", full_width = TRUE)
+```
 
-## Output data
-- **fireSense_EscapeFitted**: an object of class `fireSense_EscapeFit`, inherited from the class `glm`.
+### Events
 
-# Links to other modules
-This model can be used to parameterize the fire escape component of landscape fire models such as fireSense.
+<!-- TODO -->
+- Module initialization;
+- Model fitting;
 
+### Plotting
+
+<!-- TODO -->
+Write what is plotted.
+
+### Saving
+
+<!-- TODO -->
+Write what is saved.
+
+### Module outputs
+
+Description of the module outputs (Table \@ref(tab:moduleOutputs-fireSense-EscapeFit)).
+
+```{r moduleOutputs-fireSense-EscapeFit, echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+df_outputs <- SpaDES.core::moduleOutputs("fireSense_EscapeFit", "..")
+knitr::kable(df_outputs, caption = "List of (ref:fireSense-EscapeFit) outputs and their description.") |>
+  kableExtra::kable_styling(latex_options = "scale_down", full_width = TRUE)
+```
+
+### Links to other modules
+
+<!-- TODO: link to other fireSense modules -->
+Describe any anticipated linkages to other modules, such as modules that supply input data or do post-hoc analysis.
+
+### Getting help
+
+- <https://github.com/PredictiveEcology/fireSense_EscapeFit/issues>
+
+## References
+
+<!-- autogenerated from bibligraphy -->
