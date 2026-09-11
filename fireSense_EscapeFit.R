@@ -12,7 +12,7 @@ defineModule(sim, list(
     person("Alex M", "Chubaty", role = "ctb", email = "achubaty@for-cast.ca")
   ),
   childModules = character(0),
-  version = list(SpaDES.core = "0.1.0", fireSense_EscapeFit = "0.0.1"),
+  version = list(SpaDES.core = "0.1.0", fireSense_EscapeFit = "1.0.0"),
   spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = NA_character_, # e.g., "year",
