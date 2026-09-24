@@ -12,7 +12,7 @@ defineModule(sim, list(
     person("Alex M", "Chubaty", role = "ctb", email = "achubaty@for-cast.ca")
   ),
   childModules = character(0),
-  version = list(SpaDES.core = "0.1.0", fireSense_EscapeFit = "1.0.0.9000"),
+  version = list(SpaDES.core = "0.1.0", fireSense_EscapeFit = "1.0.0.9001"),
   spatialExtent = raster::extent(rep(NA_real_, 4)),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = NA_character_, # e.g., "year",
@@ -30,6 +30,8 @@ defineModule(sim, list(
                     desc = "optional. When to start saving output to a file."),
     defineParameter(".saveInterval", "numeric", default = NA,
                     desc = "optional. Interval between save events."),
+    defineParameter(".studyAreaName", "character", NA, NA, NA,
+                    "Human-readable name for the study area used."),
     defineParameter(".useCache", "logical", FALSE, NA, NA,
                     paste("Should this entire module be run with caching activated?",
                           "This is generally intended for data-type modules, where stochasticity and time are not relevant."))
