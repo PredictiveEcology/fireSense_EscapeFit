@@ -1,7 +1,7 @@
 ---
 title: "fireSense_EscapeFit Manual"
-subtitle: "v.0.0.1"
-date: "Last updated: 2025-04-08"
+subtitle: "v.1.0.0.9001"
+date: "Last updated: 2026-09-24"
 output:
   bookdown::html_document2:
     toc: true
@@ -30,7 +30,7 @@ always_allow_html: true
 
 #### Authors:
 
-Jean Marchal <jean.d.marchal@gmail.com> [aut], Ian Eddy <ian.eddy@nrcan-rncan.gc.ca> [aut, cre], Eliot McIntire <eliot.mcintire@nrcan-rncan.gc.ca> [aut], Alex M Chubaty <achubaty@for-cast.ca> [ctb]
+Eliot McIntire <eliot.mcintire@nrcan-rncan.gc.ca> [aut, cre], Ian Eddy <ian.eddy@nrcan-rncan.gc.ca> [aut], Jean Marchal <jean.d.marchal@gmail.com> [aut], Alex M Chubaty <achubaty@for-cast.ca> [ctb]
 <!-- ideally separate authors with new lines, '\n' not working -->
 
 ## Module Overview
@@ -49,7 +49,7 @@ This is a template for module documentation, and should be changed to reflect yo
 
 Table \@ref(tab:moduleInputs-fireSense-EscapeFit) shows the full list of module inputs.
 
-<table class="table" style="color: black; margin-left: auto; margin-right: auto;">
+<table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>(\#tab:moduleInputs-fireSense-EscapeFit)(\#tab:moduleInputs-fireSense-EscapeFit)List of (ref:fireSense-EscapeFit) input objects and their description.</caption>
  <thead>
   <tr>
@@ -78,7 +78,7 @@ Table \@ref(tab:moduleInputs-fireSense-EscapeFit) shows the full list of module 
 Summary of user-visible parameters (Table \@ref(tab:moduleParams-fireSense-EscapeFit))
 
 
-<table class="table" style="color: black; margin-left: auto; margin-right: auto;">
+<table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>(\#tab:moduleParams-fireSense-EscapeFit)(\#tab:moduleParams-fireSense-EscapeFit)List of (ref:fireSense-EscapeFit) parameters and their description.</caption>
  <thead>
   <tr>
@@ -124,6 +124,14 @@ Summary of user-visible parameters (Table \@ref(tab:moduleParams-fireSense-Escap
    <td style="text-align:left;"> optional. Interval between save events. </td>
   </tr>
   <tr>
+   <td style="text-align:left;"> .studyAreaName </td>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Human-readable name for the study area used. </td>
+  </tr>
+  <tr>
    <td style="text-align:left;"> .useCache </td>
    <td style="text-align:left;"> logical </td>
    <td style="text-align:left;"> FALSE </td>
@@ -154,7 +162,7 @@ Write what is saved.
 
 Description of the module outputs (Table \@ref(tab:moduleOutputs-fireSense-EscapeFit)).
 
-<table class="table" style="color: black; margin-left: auto; margin-right: auto;">
+<table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>(\#tab:moduleOutputs-fireSense-EscapeFit)(\#tab:moduleOutputs-fireSense-EscapeFit)List of (ref:fireSense-EscapeFit) outputs and their description.</caption>
  <thead>
   <tr>
